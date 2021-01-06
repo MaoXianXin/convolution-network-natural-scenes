@@ -1,4 +1,6 @@
 from tensorflow.keras import Model
+import tensorflow as tf
+from tensorflow.keras.layers import Input
 from tensorflow.keras.layers import Flatten, Conv2D, MaxPool2D, Dense, Dropout, BatchNormalization
 
 '''
@@ -113,3 +115,11 @@ class ConvModel(Model):
         x = self.flatten_norm(x)
         x = self.dense(x)
         return x
+
+    def model(self):
+        x = Input(shape=(224, 224, 3))
+        return tf.keras.models.Model(inputs=[x], outputs=self.call(x))
+
+
+if __name__ == '__main__':
+    ConvModel().model().summary()
