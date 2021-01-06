@@ -4,6 +4,7 @@ import tensorflow as tf
 import pandas as pd
 import matplotlib.pyplot as plt
 from tensorflow.keras.models import save_model
+from tensorflow.keras.layers import BatchNormalization
 
 from nets.conv_net import ConvModel
 from utils.data_generator import train_val_generator
@@ -13,14 +14,14 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 train_gen = train_val_generator(
     data_dir='../dataset/natural-scenes/seg_train',
-    target_size=(150, 150),    # 把图片的h和w从64变成150，增大图片的分辨率
+    target_size=(224, 224),    # 把图片的h和w从64变成150，增大图片的分辨率
     batch_size=32,
     class_mode='categorical',
     subset='training')
 
 val_gen = train_val_generator(
     data_dir='../dataset/natural-scenes/seg_train',
-    target_size=(150, 150),
+    target_size=(224, 224),
     batch_size=32,
     class_mode='categorical',
     subset='validation')
@@ -35,7 +36,22 @@ val_batch, val_label_batch = val_gen.next()
 # plot_images(val_batch, val_label_batch)
 
 # 类实例化
-model = ConvModel()
+base_model = tf.keras.applications.MobileNetV2(input_shape=(224, 224, 3),
+                                               include_top=False,
+                                               weights='imagenet')
+base_model.trainable = True
+global_average_layer = tf.keras.layers.GlobalAveragePooling2D()
+fc1 = tf.keras.layers.Dense(512)
+prediction_layer = tf.keras.layers.Dense(6, activation='softmax')
+
+inputs = tf.keras.Input(shape=(224, 224, 3))
+x = base_model(inputs, training=True)
+x = global_average_layer(x)
+x = fc1(x)
+x = BatchNormalization()(x)
+outputs = prediction_layer(x)
+model = tf.keras.Model(inputs, outputs)
+print(model.summary())
 callbacks = [tf.keras.callbacks.EarlyStopping(monitor='val_accuracy', patience=5, mode='max', restore_best_weights=True)]
 
 '''

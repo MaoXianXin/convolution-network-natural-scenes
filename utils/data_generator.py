@@ -22,8 +22,8 @@ def train_val_generator(data_dir, target_size, batch_size, class_mode=None, subs
     train_val_datagen = ImageDataGenerator(# rotation_range=10, # rotation
         # width_shift_range=0.2, # horizontal shift
         # height_shift_range=0.2, # vertical shift
-        # zoom_range=0.2, # zoom
-        # horizontal_flip=True, # horizontal flip
+        zoom_range=0.2, # zoom
+        horizontal_flip=True, # horizontal flip
         # brightness_range=[0.2,1.2],
         rescale=1.0/255.0,
         validation_split=0.1)

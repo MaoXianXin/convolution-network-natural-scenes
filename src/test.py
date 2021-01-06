@@ -4,13 +4,13 @@ from utils.image_plot import plot_images
 
 test_gen = test_generator(
     data_dir='../dataset/natural-scenes/seg_test',
-    target_size=(150, 150),
+    target_size=(224, 224),
     batch_size=32,
     class_mode='categorical')
 
 pred_gen = pred_generator(
     data_dir='../dataset/natural-scenes/seg_pred',
-    target_size=(150, 150),
+    target_size=(224, 224),
     batch_size=32,
     class_mode=None)
 
@@ -28,7 +28,7 @@ pred_gen = pred_generator(
 - x：需要做预测的数据集，可以用ImageDataGenerator读取的数据。
 '''
 
-model_path = './models/model-2021-01-06-13-52-48'
+model_path = './models/model-2021-01-06-07-49-43'
 loaded_model = load_model(filepath=model_path)
 loss, accuracy = loaded_model.evaluate(x=test_gen)
 
