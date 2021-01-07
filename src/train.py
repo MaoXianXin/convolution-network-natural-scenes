@@ -9,6 +9,7 @@ from tensorflow.keras.layers import BatchNormalization
 from nets.conv_net import ConvModel
 from utils.data_generator import train_val_generator
 from utils.image_plot import plot_images
+import tempfile
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
@@ -107,9 +108,17 @@ plt.savefig('train_log.png')
 '''
 # 模型保存
 # 创建保存路径
-model_name = "model-" + time.strftime('%Y-%m-%d-%H-%M-%S')
-model_path = os.path.join('models', model_name)
-if not os.path.exists(model_path):
-    os.makedirs(model_path)
+MODEL_DIR = tempfile.gettempdir() + '/natural_scenes/'
+version = 1
+export_path = os.path.join(MODEL_DIR, str(version))
+print('export_path = {}\n'.format(export_path))
 
-save_model(model=model, filepath=model_path)
+tf.keras.models.save_model(
+    model,
+    export_path,
+    overwrite=True,
+    include_optimizer=True,
+    save_format=None,
+    signatures=None,
+    options=None
+)
