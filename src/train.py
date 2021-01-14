@@ -37,18 +37,19 @@ val_batch, val_label_batch = val_gen.next()
 # plot_images(val_batch, val_label_batch)
 
 # 类实例化
-base_model = tf.keras.applications.MobileNetV2(input_shape=(224, 224, 3),
+base_model = tf.keras.applications.VGG16(input_shape=(224, 224, 3),
                                                include_top=False,
                                                weights='imagenet')
+print(base_model.summary())
 base_model.trainable = True
 global_average_layer = tf.keras.layers.GlobalAveragePooling2D()
-fc1 = tf.keras.layers.Dense(512)
-prediction_layer = tf.keras.layers.Dense(6, activation='softmax')
+# fc1 = tf.keras.layers.Dense(512)
+prediction_layer = tf.keras.layers.Dense(6, activation='softmax', name='onnx_output')
 
-inputs = tf.keras.Input(shape=(224, 224, 3))
+inputs = tf.keras.Input(shape=(224, 224, 3), name='onnx_input')
 x = base_model(inputs, training=True)
 x = global_average_layer(x)
-x = fc1(x)
+# x = fc1(x)
 x = BatchNormalization()(x)
 outputs = prediction_layer(x)
 model = tf.keras.Model(inputs, outputs)
